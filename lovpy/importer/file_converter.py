@@ -3,6 +3,7 @@ from shutil import copy2, rmtree
 from pathlib import Path
 
 from lovpy.config import LOVPY_ROOT_PATH
+from lovpy.tools import path as path_tools
 from . import text_converter
 from . import lovpy_ignore
 
@@ -101,7 +102,7 @@ def _remove_files_to_ignore(paths):
 
     for p in paths:
         for ignore in ignore_paths:
-            if p.is_relative_to(ignore):
+            if path_tools.is_relative_to(p, ignore):
                 break
         else:
             yield p

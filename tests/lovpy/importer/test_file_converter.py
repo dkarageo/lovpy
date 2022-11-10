@@ -1,6 +1,7 @@
 from shutil import copytree
 from tempfile import TemporaryDirectory
 from pathlib import Path
+from typing import Tuple
 from unittest import TestCase
 
 from lovpy.importer.file_converter import convert_path, restore_path, BACKUP_FOLDER
@@ -34,7 +35,7 @@ class Test(TestCase):
         self.assertTrue(restored_file.exists())
 
     @staticmethod
-    def copytree_to_tempdir(src: Path) -> tuple[TemporaryDirectory, Path]:
+    def copytree_to_tempdir(src: Path) -> Tuple[TemporaryDirectory, Path]:
         temp_dir: TemporaryDirectory = TemporaryDirectory()
         copied_folder: Path = Path(temp_dir.name) / src.name
         copytree(src, copied_folder)

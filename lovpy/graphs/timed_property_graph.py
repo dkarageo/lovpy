@@ -2,7 +2,7 @@ import itertools
 import logging
 from copy import deepcopy
 from io import BytesIO
-from typing import Union
+from typing import Union, Dict
 
 import networkx
 from networkx.readwrite.graphml import write_graphml
@@ -718,7 +718,7 @@ class TimedPropertyGraph:
     def clear_colorization(self):
         self.graph.clear_colorization()
 
-    def replace_nodes(self, mapping: dict[Union['PredicateNode', str],
+    def replace_nodes(self, mapping: Dict[Union['PredicateNode', str],
                                           Union['PredicateNode', str]]) -> 'TimedPropertyGraph':
         """Replaces nodes in-place.
 

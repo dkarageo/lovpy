@@ -1,6 +1,6 @@
 from itertools import product
 from copy import copy, deepcopy
-from typing import Generator
+from typing import Generator, Dict, List, Tuple
 import warnings
 import re
 
@@ -10,12 +10,12 @@ from .timed_property_graph import TimedPropertyGraph, PredicateNode
 class DynamicGraph:
     """A dynamic graph that produces temporal graphs by dynamic code execution."""
 
-    def __init__(self, graph: TimedPropertyGraph, mappings: dict = {}):
+    def __init__(self, graph: TimedPropertyGraph, mappings: Dict = {}):
         self.temporal_graph = graph
         # Map between predicate nodes and list of the dynamic parts of each node.
         self.dynamic_mappings = mappings
 
-    def evaluate(self, globs: dict = {}, locs: dict = {}) -> Generator['EvaluatedDynamicGraph',
+    def evaluate(self, globs: Dict = {}, locs: Dict = {}) -> Generator['EvaluatedDynamicGraph',
                                                                        None, None]:
         """Evaluates dynamic graph into each possible temporal graph.
 
@@ -60,9 +60,9 @@ class DynamicGraph:
 
         return DynamicGraph(graph, mappings) if mappings else None
 
-    def _evaluate_mappings(self, globs: dict, locs: dict) -> list[list[tuple]]:
+    def _evaluate_mappings(self, globs: Dict, locs: Dict) -> List[List[Tuple]]:
         """Computes all possible evaluated instances of mappings."""
-        evaluated_cases: list[list[tuple]] = []  # [[(n, dyn_text, eval_tex), ...], ...]
+        evaluated_cases: List[List[Tuple]] = []  # [[(n, dyn_text, eval_tex), ...], ...]
 
         for n, dyn_parts in self.dynamic_mappings.items():
             for d in dyn_parts:

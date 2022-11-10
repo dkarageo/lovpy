@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Union, Iterable, List
+from typing import Union, Iterable, List, Dict
 
 from lovpy.graphs.timestamps import RelativeTimestamp
 from lovpy.graphs.dynamic_temporal_graph import DynamicGraph, EvaluatedDynamicGraph
@@ -37,8 +37,8 @@ class RuleSet:
         for p in properties:
             self._add_property(p)
 
-    def get_evaluated_theorems(self, globs: dict = None,
-                               locs: dict = None) -> list[Union[TimedPropertyGraph,
+    def get_evaluated_theorems(self, globs: Dict = None,
+                               locs: Dict = None) -> List[Union[TimedPropertyGraph,
                                                                 EvaluatedDynamicGraph]]:
         """Computes all evaluations of the theorems in the set.
 
@@ -48,8 +48,8 @@ class RuleSet:
         """
         return RuleSet._evaluate_dynamic_graphs(self.theorems, globs, locs)
 
-    def get_evaluated_properties(self, globs: dict = None, locs: dict = None,
-                                 negatives: bool = False) -> list[Union[TimedPropertyGraph,
+    def get_evaluated_properties(self, globs: Dict = None, locs: Dict = None,
+                                 negatives: bool = False) -> List[Union[TimedPropertyGraph,
                                                                         EvaluatedDynamicGraph]]:
         """Computes all evaluations of the properties in the set.
 
@@ -83,8 +83,8 @@ class RuleSet:
 
     @staticmethod
     def _evaluate_dynamic_graphs(graphs: Iterable[Union[TimedPropertyGraph, DynamicGraph]],
-                                 globs: dict,
-                                 locs: dict) -> list[Union[TimedPropertyGraph,
+                                 globs: Dict,
+                                 locs: Dict) -> List[Union[TimedPropertyGraph,
                                                            EvaluatedDynamicGraph]]:
         """Evaluates a mixed list of dynamic and normal temporal graphs.
 

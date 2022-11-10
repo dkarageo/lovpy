@@ -1,10 +1,12 @@
 import runpy
 import sys
 from pathlib import Path
+from typing import List, Set
 
 from lovpy.logic.properties import RuleSet, add_global_rule_set
 from lovpy.logic.next_theorem_selectors import NextTheoremSelector
 from lovpy.importer.file_converter import convert_path, restore_path
+from lovpy.tools import path
 
 
 class InvalidConversionPath(RuntimeError):
@@ -22,7 +24,7 @@ class Program:
         """
         self.entry_point: Path = entry_point
         self.config: 'VerificationConfiguration' = config
-        self.rule_sets: set[RuleSet] = set()
+        self.rule_sets: Set[RuleSet] = set()
 
     def __call__(self, *argv) -> None:
         """Runs the program under verification.
@@ -39,7 +41,8 @@ class Program:
         :raises InvalidConversionPath: When conversion path does not include
                 entry point of the program.
         """
-        if not self.entry_point.absolute().is_relative_to(self.config.conversion_root.absolute()):
+        if not path.is_relative_to(self.entry_point.absolute(),
+                                   self.config.conversion_root.absolute()):
             message = "Lovpy requires entry point to be located under conversion root.\n"
             message += f"Entry point: {str(self.entry_point)}\n"
             message += f"Conversion root: {str(self.config.conversion_root)}"
@@ -69,6 +72,6 @@ class Program:
 
 
 class VerificationConfiguration:
-    def __init__(self, provers: list[NextTheoremSelector]):
-        self.provers: list[NextTheoremSelector] = provers
+    def __init__(self, provers: List[NextTheoremSelector]):
+        self.provers: List[NextTheoremSelector] = provers
         self.conversion_root: Path = Path().cwd()

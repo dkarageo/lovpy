@@ -1,5 +1,6 @@
 import re
 from pathlib import Path
+from typing import List
 
 from lovpy.logic.properties import RuleSet, add_global_rule_set
 from lovpy.monitor.monitored_predicate import MonitoredPredicate, add_predicate_to_monitor
@@ -10,7 +11,7 @@ from lovpy.graphs.timestamps import RelativeTimestamp, LesserThanRelativeTimesta
 class GherkinImporter:
     """A mechanism that converts Gherkin-like rules to temporal graphs."""
     def __init__(self):
-        self.import_paths: list[Path] = []
+        self.import_paths: List[Path] = []
 
     def add_import_path(self, path: Path) -> 'GherkinImporter':
         """Adds a Gherkin file to the list of files to be imported.
@@ -36,7 +37,7 @@ class GherkinImporter:
         self.import_paths.extend(Path(root).rglob("*.gherkin"))
         return self
 
-    def import_rules(self) -> list[RuleSet]:
+    def import_rules(self) -> List[RuleSet]:
         """Imports the rules of all available Gherkin files.
 
         Gherkin files should have been previously added to the importer by
@@ -47,13 +48,13 @@ class GherkinImporter:
         :returns: Rule sets containing the imported rules.
         :rtype: list[RuleSet]
         """
-        repositories: list[RuleSet] = []
+        repositories: List[RuleSet] = []
 
         for p in self.import_paths:
             with open(p, "r") as file:
                 gherkin = file.read()
 
-            rules: list[TimedPropertyGraph] = convert_gherkin_to_graphs(gherkin)
+            rules: List[TimedPropertyGraph] = convert_gherkin_to_graphs(gherkin)
 
             # For each file create a new rules repository.
             rules_repo = RuleSet()

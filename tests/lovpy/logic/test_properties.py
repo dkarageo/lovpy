@@ -1,3 +1,4 @@
+from typing import Tuple
 from unittest import TestCase
 
 from lovpy.logic.properties import RuleSet
@@ -259,7 +260,7 @@ class TestRuleSet(TestCase):
         return rule
 
     @staticmethod
-    def create_dynamic_property_rule() -> tuple[TimedPropertyGraph, str]:
+    def create_dynamic_property_rule() -> Tuple[TimedPropertyGraph, str]:
         rule = PredicateGraph("A", "a_$var$", "b").set_timestamp(RelativeTimestamp(0))
         rule = rule.logical_implication(
             PredicateGraph("B", "a_$var$").set_timestamp(RelativeTimestamp(-1)).logical_and(
@@ -268,7 +269,7 @@ class TestRuleSet(TestCase):
         return rule, "var"
 
     @staticmethod
-    def create_dynamic_theorem_rule() -> tuple[TimedPropertyGraph, str]:
+    def create_dynamic_theorem_rule() -> Tuple[TimedPropertyGraph, str]:
         rule = PredicateGraph("A", "a_$var$", "b").set_timestamp(RelativeTimestamp(0))
         rule = rule.logical_implication(
             PredicateGraph("B", "a_$var$").set_timestamp(RelativeTimestamp(0)).logical_and(
@@ -277,7 +278,7 @@ class TestRuleSet(TestCase):
         return rule, "var"
 
     @staticmethod
-    def create_dynamic_complex_rule() -> tuple[TimedPropertyGraph, str]:
+    def create_dynamic_complex_rule() -> Tuple[TimedPropertyGraph, str]:
         rule = PredicateGraph("A", "a_$var$", "b").set_timestamp(RelativeTimestamp(0))
         rule = rule.logical_implication(
             PredicateGraph("B", "a_$var$").set_timestamp(RelativeTimestamp(0)).logical_and(

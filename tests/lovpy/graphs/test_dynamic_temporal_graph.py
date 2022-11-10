@@ -1,6 +1,7 @@
 import unittest
 from functools import reduce
 from itertools import product
+from typing import Tuple
 
 from lovpy.graphs.dynamic_temporal_graph import DynamicGraph, EvaluatedDynamicGraph
 from lovpy.graphs.timed_property_graph import TimedPropertyGraph, PredicateGraph, PredicateNode
@@ -146,7 +147,7 @@ class TestDynamicGraph(unittest.TestCase):
         self.assertEqual(dynamic.dynamic_mappings, {"a_$var$": ["$var$"]})
 
     @staticmethod
-    def create_dynamic_property_rule() -> tuple[TimedPropertyGraph, str]:
+    def create_dynamic_property_rule() -> Tuple[TimedPropertyGraph, str]:
         rule = PredicateGraph("A", "a_$var$", "b").set_timestamp(RelativeTimestamp(0))
         rule = rule.logical_implication(
             PredicateGraph("B", "a_$var$").set_timestamp(RelativeTimestamp(-1)).logical_and(
