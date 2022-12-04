@@ -20,7 +20,8 @@ if tf_installed and os.environ.get("LOVPY_DISABLE_GPU", 0) == "1":
 if tf_installed:
     from .models.train_model import load_or_train_model
 
-from .monitor.wrappers import LogipyPrimitive, lovpy_call
+from .monitor.wrappers import LogipyPrimitive, lovpy_call, clear_previous_raised_exceptions
+import lovpy.exceptions
 from . import exception_handler
 from . import config
 
