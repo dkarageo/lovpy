@@ -10,7 +10,7 @@ import lovpy.graphs.timed_property_graph
 import lovpy.logic.prover
 
 
-VERSION = "0.0.1"
+VERSION = "0.1.0"
 
 LOVPY_ROOT_PATH = Path(__file__).absolute().parent  # Absolute path of lovpy's installation.
 
