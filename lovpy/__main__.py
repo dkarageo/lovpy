@@ -1,11 +1,8 @@
 from sys import argv
 from pathlib import Path
 
-from .logic.properties import RuleSet
-from .config import VERSION
-from .monitor.program import Program, VerificationConfiguration
-from .logic.next_theorem_selectors import default_theorem_selector
-from .importer.gherkin_importer import GherkinImporter
+from lovpy.runner import run
+from lovpy.config import VERSION
 
 
 def main():
@@ -51,23 +48,6 @@ def main():
         print("\t\tsynthetics : Evaluation is performed on synthetic samples.")
         print("\t-h | --help : Displays this message.")
         print("\t-v | --version : Displays lovpy's version.")
-
-
-def run(script: Path, *args, gherkin_path: Path = Path.cwd()) -> None:
-    """Runs a script under verification.
-
-    :param script: Entry point script for the python program to be verified.
-    :type script: Path
-    :param gherkin_path: Root of the directory tree to be searched for gherkin files.
-       Default value is set to current working directory.
-    :type gherkin_path: Path
-    """
-    config: VerificationConfiguration = VerificationConfiguration(default_theorem_selector)
-    rules: list[RuleSet] = GherkinImporter().discover(gherkin_path).import_rules()
-    program: Program = Program(script, config)
-    for group in rules:
-        program.add_monitored_rules(group)
-    program(args)
 
 
 main()
