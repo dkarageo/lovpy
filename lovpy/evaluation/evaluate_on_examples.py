@@ -1,13 +1,13 @@
 import threading
 from pathlib import Path
+from typing import Dict
 
 import lovpy
 from lovpy.exceptions import PropertyNotHoldsException
-from lovpy.monitor.wrappers import clear_previous_raised_exceptions
+from lovpy.runner import run
 
-
-EXAMPLES_DIR = "../../examples"
-LONGEST_ESTIMATED_SCRIPT_RUNTIME = 120.  # 120 seconds
+EXAMPLES_DIR: Path = Path(__file__).parent.parent.parent / "examples"
+LONGEST_ESTIMATED_SCRIPT_RUNTIME: float = 120.  # 120 seconds
 
 
 def evaluate_proving_methods():
@@ -16,8 +16,8 @@ def evaluate_proving_methods():
 
     print("-" * 64)
     print("Testing {} scripts:".format(len(valid_script_paths)+len(invalid_script_paths)))
-    print("\t-{} scripts are valid.".format(len(valid_script_paths)))
-    print("\t-{} scripts contain a bug.".format((len(invalid_script_paths))))
+    print("\t- {} scripts are valid.".format(len(valid_script_paths)))
+    print("\t- {} scripts contain a bug".format((len(invalid_script_paths))))
 
     print("-" * 64)
     print("Evaluating deterministic prover.")
@@ -25,23 +25,30 @@ def evaluate_proving_methods():
     lovpy.config.set_theorem_selector(lovpy.config.TheoremSelector.DETERMINISTIC)
     evaluate_on_examples(valid_script_paths, invalid_script_paths)
 
-    print("-" * 64)
-    print("Evaluating fully-connected NN based prover.")
-    print("-" * 64)
-    lovpy.config.set_theorem_selector(lovpy.config.TheoremSelector.SIMPLE_NN)
-    evaluate_on_examples(valid_script_paths, invalid_script_paths)
+    tensorflow_enabled = True
+    try:
+        import tensorflow
+    except ImportError:
+        tensorflow_enabled = False
 
-    print("-" * 64)
-    print("Evaluating DGCNN based prover.")
-    print("-" * 64)
-    lovpy.config.set_theorem_selector(lovpy.config.TheoremSelector.DGCNN)
-    evaluate_on_examples(valid_script_paths, invalid_script_paths)
+    if tensorflow_enabled:
+        print("-" * 64)
+        print("Evaluating fully-connected NN based prover.")
+        print("-" * 64)
+        lovpy.config.set_theorem_selector(lovpy.config.TheoremSelector.SIMPLE_NN)
+        evaluate_on_examples(valid_script_paths, invalid_script_paths)
 
-    print("-" * 64)
-    print("Evaluating Hybrid prover.")
-    print("-" * 64)
-    lovpy.config.set_theorem_selector(lovpy.config.TheoremSelector.HYBRID)
-    evaluate_on_examples(valid_script_paths, invalid_script_paths)
+        print("-" * 64)
+        print("Evaluating DGCNN based prover.")
+        print("-" * 64)
+        lovpy.config.set_theorem_selector(lovpy.config.TheoremSelector.DGCNN)
+        evaluate_on_examples(valid_script_paths, invalid_script_paths)
+
+        print("-" * 64)
+        print("Evaluating Hybrid prover.")
+        print("-" * 64)
+        lovpy.config.set_theorem_selector(lovpy.config.TheoremSelector.HYBRID)
+        evaluate_on_examples(valid_script_paths, invalid_script_paths)
 
 
 def evaluate_on_examples(valid_script_paths, invalid_script_paths):
@@ -63,20 +70,17 @@ def evaluate_on_examples(valid_script_paths, invalid_script_paths):
             invalid_to_invalid.append(p)
 
     print("-" * 64)
-    print("\t-{} out of {} valid scripts evaluated wrong.".format(
+    print("\t- {} out of {} valid scripts evaluated wrong.".format(
         len(valid_to_invalid), len(valid_script_paths)))
     for fp in valid_to_invalid:
         print("\t\t{}".format(str(fp)))
-    print("\t-{} out of {} invalid scripts evaluated wrong.".format(
+    print("\t- {} out of {} invalid scripts evaluated wrong".format(
         len(invalid_to_valid), len(invalid_script_paths)))
     for fn in invalid_to_valid:
         print("\t\t{}".format(str(fn)))
 
 
-def evaluate_script(path, timeout=None):
-    with path.open("r") as f:
-        script = f.read()
-
+def evaluate_script(script: Path, timeout: float = None) -> bool:
     # Workaround to escape deadlocks and keep testing, since calls to lock.acquire()
     # cannot be interrupted. Drawback: deadlocked threads are not killed.
     return_dict = {}
@@ -85,20 +89,21 @@ def evaluate_script(path, timeout=None):
     t.start()
     t.join(timeout)
     if not t.is_alive():
-        is_valid = return_dict["is_valid"]
+        is_valid: bool = return_dict["is_valid"]
     else:
-        is_valid = True  # Never raised exception on an invalid script, so it was labeled as valid.
+        # Never raised exception on an invalid script, so it was labeled as valid.
+        is_valid: bool = True
         print("\t\t\t-->Terminated due to timeout.")
 
-    clear_previous_raised_exceptions()
+    lovpy.clear_previous_raised_exceptions()
 
     return is_valid
 
 
-def run_script(script, return_dict):
+def run_script(script: Path, return_dict: Dict[str, bool]) -> None:
     return_dict["is_valid"] = True
     try:
-        exec(script, {})
+        run(script, EXAMPLES_DIR)
     except PropertyNotHoldsException:
         return_dict["is_valid"] = False
 
